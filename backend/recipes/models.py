@@ -1,7 +1,7 @@
 '''Основные модели'''
 from django.db import models
 from django.core.validators import MinValueValidator
-
+from django.db.models import Q,F
 from users.models import User
 
 class Tag(models.Model):
@@ -18,6 +18,12 @@ class Tag(models.Model):
         (GREEN, 'Зеленный'),
         (PURPLE, 'Фиолетовый')
     ]
+    color = models.CharField(
+        verbose_name='Цвет в HEX-коде',
+        max_length=10, unique=True,
+        default=GREEN,
+        choices=COLOR_TAG,
+        help_text='Выберите цвет')
     slag = models.SlugField(
         verbose_name ='Название слага',
         max_length = 150, unique = True,
@@ -117,3 +123,84 @@ class IngredientRecipe(models.Model):
 
     def __str__(self):
         return f'{self.ingredient} {self.amount}'
+
+class ShoppingList(models.Model):
+    """Модель для списка покупок"""
+    author = models.ForeignKey(
+        User,
+        related_name='shopping_list',
+        on_delete=models.CASCADE,
+        verbose_name='Пользователь')
+    recipe = models.ForeignKey(
+        Recipe,
+        related_name='shopping_list',
+        verbose_name='Рецепт приготовления',
+        on_delete=models.CASCADE,
+        help_text='Выберите рецепт приготовления')
+
+    class Meta:
+        '''Метамодель'''
+        verbose_name = 'Список покупок'
+        verbose_name_plural = 'Список покупок'
+        constraints = [models.UniqueConstraint(
+            fields=['author', 'recipe'],
+            name='unique_shopping_list')]
+
+    def __str__(self):
+        return f'{self.recipe}'
+
+
+class Favorite(models.Model):
+    """Избранные рецепты"""
+    author = models.ForeignKey(
+        User,
+        related_name='favorite',
+        on_delete=models.CASCADE,
+        verbose_name='Автор рецепта')
+    recipe = models.ForeignKey(
+        Recipe,
+        related_name='favorite',
+        on_delete=models.CASCADE,
+        verbose_name='Рецепт')
+
+    class Meta:
+        '''Метамодель'''
+        verbose_name = 'Избранные рецепты'
+        verbose_name_plural = 'Избранные рецепты'
+        constraints = [models.UniqueConstraint(
+            fields=['author', 'recipe'],
+            name='unique_favorite')]
+
+    def __str__(self):
+        return f'{self.recipe}'
+
+
+class Follow(models.Model):
+    """Модель подписка на автора"""
+    user = models.ForeignKey(
+        User,
+        verbose_name='Пользователь',
+        related_name='fllower',
+        on_delete=models.CASCADE,
+        help_text='Подписчик')
+    author = models.ForeignKey(
+        User,
+        verbose_name='Подписка',
+        related_name='following',
+        on_delete=models.CASCADE,
+        help_text='Подписаться на автора')
+
+    class Meta:
+        '''Метамодель'''
+        verbose_name = 'Подписки'
+        verbose_name_plural = 'Подписки'
+        constraints = [
+            models.UniqueConstraint(
+                fields=['user', 'author'],
+                name='unique_following'),
+            models.CheckConstraint(
+                check=~Q(user=F('author')),
+                name='no_self_following')]
+
+    def __str__(self):
+        return f'{self.user} подписан на {self.author}'
