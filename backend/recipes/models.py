@@ -1,7 +1,6 @@
 '''Основные модели'''
 from django.db import models
 from django.core.validators import MinValueValidator
-from django.db.models import Q,F
 from users.models import User
 
 class Tag(models.Model):
@@ -174,33 +173,3 @@ class Favorite(models.Model):
     def __str__(self):
         return f'{self.recipe}'
 
-
-class Follow(models.Model):
-    """Модель подписка на автора"""
-    user = models.ForeignKey(
-        User,
-        verbose_name='Пользователь',
-        related_name='fllower',
-        on_delete=models.CASCADE,
-        help_text='Подписчик')
-    author = models.ForeignKey(
-        User,
-        verbose_name='Подписка',
-        related_name='following',
-        on_delete=models.CASCADE,
-        help_text='Подписаться на автора')
-
-    class Meta:
-        '''Метамодель'''
-        verbose_name = 'Подписки'
-        verbose_name_plural = 'Подписки'
-        constraints = [
-            models.UniqueConstraint(
-                fields=['user', 'author'],
-                name='unique_following'),
-            models.CheckConstraint(
-                check=~Q(user=F('author')),
-                name='no_self_following')]
-
-    def __str__(self):
-        return f'{self.user} подписан на {self.author}'
