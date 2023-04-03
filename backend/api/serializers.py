@@ -1,7 +1,9 @@
-"""Сериализаторы для моделей"""
+"""Сериализаторы моделей Recipes"""
 from rest_framework import serializers
 
-from recipes.models import (Tag, Ingredient, IngredientRecipe, Favorite, ShoppingList)
+from recipes.models import (Favorite, Ingredient, IngredientRecipe,
+                            ShoppingList, Tag)
+
 
 class IngredientSerializer(serializers.ModelSerializer):
     ''''Сериализатор модели Ingredient'''

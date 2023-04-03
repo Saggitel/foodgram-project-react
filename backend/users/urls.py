@@ -1,13 +1,14 @@
+"""URL Конфигурация приложения Users"""
 from django.urls import include, path
 from rest_framework import routers
 
-from .views import APIChangePassword, FollowViewSet, UserViewSet
+from .views import APIChangePassword, SubscriptionViewSet, UserViewSet
 
-app_name = 'users'
+APP_NAME = 'users'
 
 router = routers.DefaultRouter()
 router.register(
-    r'users/Follow', FollowViewSet, basename='Follow'
+    r'users/subscriptions', SubscriptionViewSet, basename='subscriptions'
 )
 router.register(r'users', UserViewSet, basename='user')
 

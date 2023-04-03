@@ -1,8 +1,11 @@
 '''Сериализаторы моделей User'''
-from rest_framework import serializers
+from rest_framework import serializers, status
+from rest_framework.exceptions import ValidationError
 
 from recipes.models import Recipe
-from .models import User, Subscription
+
+from .models import Subscription, User
+
 
 class UserSerializer(serializers.ModelSerializer):
     '''Отображение списка пользователей'''
@@ -59,7 +62,7 @@ class RecipesSerializer:
         read_only_fields = '__all__'
 
 class SubscriptionSerializer:
-    '''Сериализатор мои подписки'''
+    '''Сериализатор модели Subscription'''
     email = serializers.ReadOnlyField(source='author.email')
     id = serializers.ReadOnlyField(source='author.id')
     username = serializers.ReadOnlyField(source='author.username')
@@ -74,7 +77,6 @@ class SubscriptionSerializer:
         model = Subscription
         fields = ('email', 'id', 'username', 'first_name', 'last_name', 'is_subscribed',
                   'recipes', 'recipes_count')
-        #read_only_fields = '__all__'
 
     def get_is_subscribed(self, obj):
         '''Проверка пописки на автора'''
@@ -83,11 +85,36 @@ class SubscriptionSerializer:
             return False
         return Subscription.objects.filter(user=obj.user, author=obj.author).exists()
 
-
     def get_recipe(self, obj):
-        pass
-
+        '''Функция вывода рецепта'''
+        return Recipe.objects.filter(author=obj.author)
 
     def get_recipes_count(self, obj):
         '''Функция подсчета количесвта рецептов'''
         return Recipe.objects.filter(author=obj.author).count()
+
+    def validate(self, data):
+        '''Функция валидации'''
+        author = self.context.get('author')
+        user = self.context.get('request').user
+        if Subscription.objects.filter(
+                author=author,
+                user=user).exists():
+            raise ValidationError(
+                detail='Вы уже подписаны на этого пользователя!',
+                code=status.HTTP_400_BAD_REQUEST)
+        if user.id == author.id:
+            raise ValidationError(
+                detail='Невозможно подписаться на себя!',
+                code=status.HTTP_400_BAD_REQUEST)
+        return super().validate(data)
+
+class PasswordSerializer(serializers.ModelSerializer):
+    """Сериализатор модели User для смены пароля"""
+    current_password = serializers.CharField(max_length=150, required=True)
+    new_password = serializers.CharField(max_length=150, required=True)
+
+    class Meta:
+        '''Метаккласс'''
+        model = User
+        fields = ('current_password', 'new_password')
