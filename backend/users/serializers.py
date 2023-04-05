@@ -40,7 +40,7 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         user.save()
         return user
 
-class RecipesSerializer:
+class RecipesSerializer(serializers.ModelSerializer):
     '''Сериализатор рецептов для Мои подписки'''
     name = serializers.ReadOnlyField(
         source ='recipe.name',
@@ -61,7 +61,7 @@ class RecipesSerializer:
         fields = ('id', 'name', 'image', 'coocking_time')
         read_only_fields = '__all__'
 
-class SubscriptionSerializer:
+class SubscriptionSerializer(serializers.ModelSerializer):
     '''Сериализатор модели Subscription'''
     email = serializers.ReadOnlyField(source='author.email')
     id = serializers.ReadOnlyField(source='author.id')
@@ -79,7 +79,7 @@ class SubscriptionSerializer:
                   'recipes', 'recipes_count')
 
     def get_is_subscribed(self, obj):
-        '''Проверка пописки на автора'''
+        '''Проверка подписки на автора'''
         request = self.context.get('request')
         if request is None or request.user.is_anonymous:
             return False

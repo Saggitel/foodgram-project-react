@@ -25,7 +25,7 @@ class Tag(models.Model):
         default=GREEN,
         choices=COLOR_TAG,
         help_text='Выберите цвет')
-    slag = models.SlugField(
+    slug = models.SlugField(
         verbose_name ='Название слага',
         max_length = 150, unique = True,
         help_text = 'Укажите слаг')
@@ -93,6 +93,10 @@ class Recipe(models.Model):
     pub_date = models.DateTimeField(
         verbose_name='Дата публикации',
         auto_now_add=True)
+    class Meta:
+        '''Метамодель'''
+        verbose_name = 'Рецепт'
+        verbose_name_plural = 'Рецепты'
 
 class IngredientRecipe(models.Model):
     '''Модель связывающая игредиенты и рецепт'''

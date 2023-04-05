@@ -3,16 +3,19 @@ from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.db.models import F, Q
 
-USER = 'user'
-ADMIN = 'admin'
-GUEST = 'guest'
-ROLE_USER = [
-    (USER, 'Пользователь'),
-    (ADMIN, 'Администратор'),
-    (GUEST, 'Гость'),
-]
 
 class User(AbstractUser):
+    '''Модель пользовтеля и его роли'''
+    USER = 'user'
+    ADMIN = 'admin'
+    GUEST = 'guest'
+    ROLE_USER = [
+        (USER, 'Пользователь'),
+        (ADMIN, 'Администратор'),
+        (GUEST, 'Гость'),
+    ]
+
+
     '''Модель пользователя'''
     username = models.CharField(max_length=150, unique=True, verbose_name='Имя пользователя')
     first_name = models.CharField(max_length=150, verbose_name='Имя')
@@ -33,6 +36,12 @@ class User(AbstractUser):
         ordering = ['username']
         verbose_name = 'Пользователь'
         verbose_name_plural = 'Пользователи'
+
+    @property
+    def admin(self):
+        '''Проверка роли пользовтеля,
+           является ли он админом'''
+        return self.role == self.ADMIN
 
     def __str__(self):
         return f'{self.username}'
