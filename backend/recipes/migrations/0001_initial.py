@@ -70,8 +70,8 @@ class Migration(migrations.Migration):
             name='ShoppingList',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('author', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='shopping_list', to=settings.AUTH_USER_MODEL, verbose_name='Пользователь')),
-                ('recipe', models.ForeignKey(help_text='Выберите рецепт приготовления', on_delete=django.db.models.deletion.CASCADE, related_name='shopping_list', to='recipes.Recipe', verbose_name='Рецепт приготовления')),
+                ('author', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='shopping_curt', to=settings.AUTH_USER_MODEL, verbose_name='Пользователь')),
+                ('recipe', models.ForeignKey(help_text='Выберите рецепт приготовления', on_delete=django.db.models.deletion.CASCADE, related_name='shopping_curt', to='recipes.Recipe', verbose_name='Рецепт приготовления')),
             ],
             options={
                 'verbose_name': 'Список покупок',
@@ -102,7 +102,7 @@ class Migration(migrations.Migration):
         ),
         migrations.AddConstraint(
             model_name='shoppinglist',
-            constraint=models.UniqueConstraint(fields=('author', 'recipe'), name='unique_shopping_list'),
+            constraint=models.UniqueConstraint(fields=('author', 'recipe'), name='unique_shopping_curt'),
         ),
         migrations.AddConstraint(
             model_name='ingredientrecipe',
