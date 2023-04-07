@@ -1,8 +1,8 @@
 '''Админ-зоны для разных моделей'''
 from django.contrib import admin
 
-from .models import (Favorite, Ingredient, IngredientRecipe, Recipe,
-                     ShoppingList, Tag)
+from .models import (Favourite, Ingredient, IngredientRecipe, Recipe,
+                     ShoppingCart, Tag)
 
 
 class IngredientsInline(admin.TabularInline):
@@ -10,14 +10,14 @@ class IngredientsInline(admin.TabularInline):
     model = IngredientRecipe
     extra = 3
 
-class FavoriteAdmin(admin.ModelAdmin):
+class FavouriteAdmin(admin.ModelAdmin):
     '''Избрынне рецепты'''
     list_display = ('author', 'recipe')
     list_filter = ('author',)
     search_fields = ('author',)
 
 
-class ShoppingListAdmin(admin.ModelAdmin):
+class ShoppingCartAdmin(admin.ModelAdmin):
     '''Список покупок'''
     list_display = ('author', 'recipe')
     list_filter = ('author',)
@@ -33,16 +33,16 @@ class IngredientRecipeAdmin(admin.ModelAdmin):
 
 class RecipeAdmin(admin.ModelAdmin):
     '''Рецепты, количесвто рецептов в избранном'''
-    list_display = ('id', 'author', 'name', 'pub_date', 'in_favorite', )
+    list_display = ('id', 'author', 'name', 'pub_date', 'in_favourite', )
     search_fields = ('name',)
     list_filter = ('pub_date', 'author', 'name', 'tags')
     filter_horizontal = ('ingredients',)
     empty_value_display = '-пусто-'
     inlines = [IngredientsInline]
 
-    def in_favorite(self, obj):
+    def in_favourite(self, obj):
         '''Добавленные рецепты в избранное'''
-        return obj.favorite.all().count()
+        return obj.favourite.all().count()
 
 
 class TagAdmin(admin.ModelAdmin):
@@ -63,5 +63,5 @@ admin.site.register(Recipe, RecipeAdmin)
 admin.site.register(Ingredient, IngredientAdmin)
 admin.site.register(Tag, TagAdmin)
 admin.site.register(IngredientRecipe, IngredientRecipeAdmin)
-admin.site.register(Favorite, FavoriteAdmin)
-admin.site.register(ShoppingList, ShoppingListAdmin)
+admin.site.register(Favourite, FavouriteAdmin)
+admin.site.register(ShoppingCart, ShoppingCartAdmin)

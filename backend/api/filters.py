@@ -1,8 +1,7 @@
 '''Фильтры для вьюсетов'''
 from django_filters.rest_framework import FilterSet, filters
-from rest_framework.filters import SearchFilter
-
 from recipes.models import Recipe, Tag
+from rest_framework.filters import SearchFilter
 from users.models import User
 
 
@@ -19,24 +18,24 @@ class RecipeFilter(FilterSet):
         to_field_name='slug',
         queryset=Tag.objects.all(),
     )
-    is_in_shopping_list = filters.NumberFilter(
+    is_in_shopping_cart = filters.NumberFilter(
         method='filter_is_in_shopping_lsit')
-    is_favorited = filters.NumberFilter(
-        method='filter_is_favorited')
+    is_favourited = filters.NumberFilter(
+        method='filter_is_favourited')
 
     class Meta:
         '''Метакласс'''
         model = Recipe
-        fields = ('tags', 'author', 'is_favorited', 'is_in_shopping_list')
+        fields = ('tags', 'author', 'is_favourited', 'is_in_shopping_cart')
 
-    def filter_is_favorited(self, queryset, name, value):
+    def filter_is_favourited(self, queryset, name, value):
         '''Метод фильтрации по избранному'''
         if self.request.user.is_authenticated and value:
-            return queryset.filter(favorite__author=self.request.user)
+            return queryset.filter(favourite__author=self.request.user)
         return queryset
 
-    def filter_is_in_shopping_list(self, queryset, name, value):
+    def filter_is_in_shopping_cart(self, queryset, name, value):
         '''Метод фильтрации по списку покупок'''
         if self.request.user.is_authenticated and value:
-            return queryset.filter(shopping_list__author=self.request.user)
+            return queryset.filter(shopping_cart__author=self.request.user)
         return queryset

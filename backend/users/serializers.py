@@ -1,11 +1,10 @@
 '''Сериализаторы моделей User'''
+from recipes.models import Recipe
 from rest_framework import serializers, status
 from rest_framework.exceptions import ValidationError
 
-from recipes.models import Recipe
-
 from .models import Subscription, User
-
+from api.fields import Base64ImageField
 
 class UserSerializer(serializers.ModelSerializer):
     '''Отображение списка пользователей'''
@@ -43,7 +42,7 @@ class RecipesSerializer(serializers.ModelSerializer):
     name = serializers.ReadOnlyField(
         source ='recipe.name',
         read_only=True)
-    image = serializers.ImageField(
+    image = Base64ImageField(
         source ='recipe.image',
         read_only=True)
     cocking_time = serializers.IntegerField(

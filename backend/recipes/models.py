@@ -1,7 +1,6 @@
 '''Основные модели'''
 from django.core.validators import MinValueValidator
 from django.db import models
-
 from users.models import User
 
 
@@ -139,16 +138,16 @@ class IngredientRecipe(models.Model):
     def __str__(self):
         return f'{self.ingredient.name} {self.amount}'
 
-class ShoppingList(models.Model):
+class ShoppingCart(models.Model):
     """Модель для списка покупок"""
     author = models.ForeignKey(
         User,
-        related_name='shopping_list',
+        related_name='shopping_cart',
         on_delete=models.CASCADE,
         verbose_name='Пользователь')
     recipe = models.ForeignKey(
         Recipe,
-        related_name='shopping_list',
+        related_name='shopping_cart',
         verbose_name='Рецепт приготовления',
         on_delete=models.CASCADE,
         help_text='Выберите рецепт приготовления')
@@ -159,22 +158,22 @@ class ShoppingList(models.Model):
         verbose_name_plural = 'Список покупок'
         constraints = [models.UniqueConstraint(
             fields=['author', 'recipe'],
-            name='unique_shopping_list')]
+            name='unique_shopping_cart')]
 
     def __str__(self):
         return f'{self.recipe.name}'
 
 
-class Favorite(models.Model):
+class Favourite(models.Model):
     """Избранные рецепты"""
     author = models.ForeignKey(
         User,
-        related_name='favorite',
+        related_name='favourite',
         on_delete=models.CASCADE,
         verbose_name='Автор рецепта')
     recipe = models.ForeignKey(
         Recipe,
-        related_name='favorite',
+        related_name='favourite',
         on_delete=models.CASCADE,
         verbose_name='Рецепт')
 
@@ -184,7 +183,7 @@ class Favorite(models.Model):
         verbose_name_plural = 'Избранные рецепты'
         constraints = [models.UniqueConstraint(
             fields=['author', 'recipe'],
-            name='unique_favorite')]
+            name='unique_favourite')]
 
     def __str__(self):
         return f'{self.recipe.name}'

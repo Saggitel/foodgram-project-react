@@ -1,22 +1,22 @@
 '''Вьюсеты прложения Recipes'''
+from api.paginations import ApiPagination
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
+from recipes.models import Favourite, Ingredient, Recipe, ShoppingCart, Tag
 from rest_framework import mixins, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import SAFE_METHODS, AllowAny, IsAuthenticated
 from rest_framework.response import Response
-
-from recipes.models import Favorite, Ingredient, Recipe, ShoppingList, Tag
 from users.models import User
 
 from .filters import IngredientSearchFilter, RecipeFilter
 from .permissions import IsOwnerOrAdminOrReadOnly
-from .serializers import (FavoriteSerializer, IngredientSerializer,
+from .serializers import (FavouriteSerializer, IngredientSerializer,
                           RecipeListSerializer, RecipeWriteSerializer,
-                          ShoppingListSerializer, TagSerializer)
-from .services import shopping_list
-from api.paginations import ApiPagination
+                          ShoppingCartSerializer, TagSerializer)
+from .services import shopping_cart
+
 
 class TagViewSet(mixins.ListModelMixin,
                 mixins.RetrieveModelMixin,
@@ -54,46 +54,46 @@ class RecipeViewSet(viewsets.ModelViewSet):
     @action(detail=True,
             methods=['post', 'delete'],
             permission_classes=[IsAuthenticated])
-    def favorite(self, request, *args, **kwargs):
+    def favourite(self, request, *args, **kwargs):
         '''Функция получения, добавления и удаления рецепта из избранного'''
         recipe = get_object_or_404(Recipe, id=self.kwargs.get('pk'))
         user = self.request.user
         if request.method == 'POST':
-            serializer = FavoriteSerializer(data=request.data)
+            serializer = FavouriteSerializer(data=request.data)
             serializer.is_valid(raise_exception=True)
             serializer.save(author=user, recipe=recipe)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
-        Favorite.objects.get(recipe=recipe).delete()
+        Favourite.objects.get(recipe=recipe).delete()
         return Response('Рецепт успешно удалён из избранного.',
                         status=status.HTTP_204_NO_CONTENT)
 
     @action(detail=True,
             methods=['post', 'delete'],
             permission_classes=[IsAuthenticated])
-    def shopping_list(self, request, **kwargs):
+    def shopping_cart(self, request, **kwargs):
         '''Функция получения, добавления и удаления рецепта из списка покупок'''
         recipe = get_object_or_404(Recipe, id=self.kwargs.get('pk'))
         user = self.request.user
         if request.method == 'POST':
-            serializer = ShoppingListSerializer(data=request.data)
+            serializer = ShoppingCartSerializer(data=request.data)
             serializer.is_valid(raise_exception=True)
             serializer.save(author=user, recipe=recipe)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
-        if not ShoppingList.objects.filter(author=user,
+        if not ShoppingCart.objects.filter(author=user,
                                            recipe=recipe).exists():
             return Response({'errors': 'Объект не найден'},
                             status=status.HTTP_404_NOT_FOUND)
-        ShoppingList.objects.get(recipe=recipe).delete()
+        ShoppingCart.objects.get(recipe=recipe).delete()
         return Response('Рецепт успешно удалён из списка покупок.',
                         status=status.HTTP_204_NO_CONTENT)
 
     @action(detail=False,
             methods=['get'],
             permission_classes=[IsAuthenticated])
-    def download_shopping_list(self, request):
+    def download_shopping_cart(self, request):
         '''Функция скачивания из покупок нексольких рецептов'''
         author = User.objects.get(id=self.request.user.pk)
-        if author.shopping_list.exists():
-            return shopping_list(self, request, author)
+        if author.shopping_cart.exists():
+            return shopping_cart(self, request, author)
         return Response('Список покупок пуст.',
                         status=status.HTTP_404_NOT_FOUND)

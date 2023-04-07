@@ -1,4 +1,5 @@
 '''Вьюctns модели Users'''
+from api.paginations import ApiPagination
 from django.contrib.auth.hashers import check_password
 from django.shortcuts import get_object_or_404
 from djoser.views import UserViewSet as DjoserUserViewSet
@@ -12,7 +13,7 @@ from rest_framework.views import APIView
 from .models import Subscription, User
 from .serializers import (PasswordSerializer, SubscriptionSerializer,
                           UserRegistrationSerializer, UserSerializer)
-from api.paginations import ApiPagination
+
 
 class UserViewSet(DjoserUserViewSet):
     '''Вьюсет модели User'''
