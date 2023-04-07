@@ -18,4 +18,3 @@ requests==2.26.0
 python-dotenv
 Pillow
 djoser
-pylint-django
