@@ -27,7 +27,7 @@ class Tag(models.Model):
         help_text='Выберите цвет')
     slug = models.SlugField(
         verbose_name ='Название слага',
-        max_length = 150, unique = True,
+        max_length = 200, unique = True,
         help_text = 'Укажите слаг')
 
     class Meta:
@@ -45,7 +45,7 @@ class Ingredient(models.Model):
         max_length = 150,
         db_index = True,
         help_text = 'Введите название ингредиента')
-    measurement_unit = models.SlugField(
+    measurement_unit = models.CharField(
         verbose_name ='Единица измерения',
         max_length = 150,
         help_text = 'Укажите единицы измерения')
@@ -93,10 +93,20 @@ class Recipe(models.Model):
     pub_date = models.DateTimeField(
         verbose_name='Дата публикации',
         auto_now_add=True)
+
     class Meta:
         '''Метамодель'''
+        ordering = ['-id']
+        default_related_name = 'recipe'
         verbose_name = 'Рецепт'
         verbose_name_plural = 'Рецепты'
+        constraints = [
+            models.UniqueConstraint(
+                fields=['name', 'author'],
+                name='unique_recipe')]
+
+    def __str__(self):
+        return f'{self.name}'
 
 class IngredientRecipe(models.Model):
     '''Модель связывающая игредиенты и рецепт'''
@@ -127,7 +137,7 @@ class IngredientRecipe(models.Model):
                 name='unique_ingredients')]
 
     def __str__(self):
-        return f'{self.ingredient} {self.amount}'
+        return f'{self.ingredient.name} {self.amount}'
 
 class ShoppingList(models.Model):
     """Модель для списка покупок"""
@@ -152,7 +162,7 @@ class ShoppingList(models.Model):
             name='unique_shopping_list')]
 
     def __str__(self):
-        return f'{self.recipe}'
+        return f'{self.recipe.name}'
 
 
 class Favorite(models.Model):
@@ -177,4 +187,4 @@ class Favorite(models.Model):
             name='unique_favorite')]
 
     def __str__(self):
-        return f'{self.recipe}'
+        return f'{self.recipe.name}'

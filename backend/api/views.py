@@ -16,7 +16,7 @@ from .serializers import (FavoriteSerializer, IngredientSerializer,
                           RecipeListSerializer, RecipeWriteSerializer,
                           ShoppingListSerializer, TagSerializer)
 from .services import shopping_list
-
+from api.paginations import ApiPagination
 
 class TagViewSet(mixins.ListModelMixin,
                 mixins.RetrieveModelMixin,
@@ -41,7 +41,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
     queryset = Recipe.objects.all()
     permission_classes = (IsOwnerOrAdminOrReadOnly, )
     filter_backends = (DjangoFilterBackend, )
-    pagination_class = PageNumberPagination
+    pagination_class = ApiPagination
     filterset_class = RecipeFilter
 
     def get_serializer_class(self):
@@ -59,21 +59,10 @@ class RecipeViewSet(viewsets.ModelViewSet):
         recipe = get_object_or_404(Recipe, id=self.kwargs.get('pk'))
         user = self.request.user
         if request.method == 'POST':
-            if Favorite.objects.filter(author=user,
-                                       recipe=recipe).exists():
-                return Response({'errors': 'Рецепт уже добавлен!'},
-                                status=status.HTTP_400_BAD_REQUEST)
             serializer = FavoriteSerializer(data=request.data)
-            if serializer.is_valid(raise_exception=True):
-                serializer.save(author=user, recipe=recipe)
-                return Response(serializer.data,
-                                status=status.HTTP_201_CREATED)
-            return Response(serializer.errors,
-                            status=status.HTTP_400_BAD_REQUEST)
-        if not Favorite.objects.filter(author=user,
-                                       recipe=recipe).exists():
-            return Response({'errors': 'Объект не найден'},
-                            status=status.HTTP_404_NOT_FOUND)
+            serializer.is_valid(raise_exception=True)
+            serializer.save(author=user, recipe=recipe)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
         Favorite.objects.get(recipe=recipe).delete()
         return Response('Рецепт успешно удалён из избранного.',
                         status=status.HTTP_204_NO_CONTENT)
@@ -86,17 +75,10 @@ class RecipeViewSet(viewsets.ModelViewSet):
         recipe = get_object_or_404(Recipe, id=self.kwargs.get('pk'))
         user = self.request.user
         if request.method == 'POST':
-            if ShoppingList.objects.filter(author=user,
-                                           recipe=recipe).exists():
-                return Response({'errors': 'Рецепт уже добавлен!'},
-                                status=status.HTTP_400_BAD_REQUEST)
             serializer = ShoppingListSerializer(data=request.data)
-            if serializer.is_valid(raise_exception=True):
-                serializer.save(author=user, recipe=recipe)
-                return Response(serializer.data,
-                                status=status.HTTP_201_CREATED)
-            return Response(serializer.errors,
-                            status=status.HTTP_400_BAD_REQUEST)
+            serializer.is_valid(raise_exception=True)
+            serializer.save(author=user, recipe=recipe)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
         if not ShoppingList.objects.filter(author=user,
                                            recipe=recipe).exists():
             return Response({'errors': 'Объект не найден'},

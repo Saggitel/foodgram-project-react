@@ -12,14 +12,23 @@ from rest_framework.views import APIView
 from .models import Subscription, User
 from .serializers import (PasswordSerializer, SubscriptionSerializer,
                           UserRegistrationSerializer, UserSerializer)
-
+from api.paginations import ApiPagination
 
 class UserViewSet(DjoserUserViewSet):
     '''Вьюсет модели User'''
     queryset = User.objects.all()
     permission_classes = (AllowAny,)
-    pagination_class = PageNumberPagination
+    pagination_class = ApiPagination
     serializer_class = UserSerializer
+
+    @action(detail=False,
+            methods=['get'],
+            permission_classes=[IsAuthenticated])
+    def me(self, request):
+        """Кастомное получение профиля пользователя."""
+        user = self.request.user
+        serializer = UserSerializer(user, context={'request': request})
+        return Response(serializer.data)
 
     def get_serializer_class(self):
         if self.action in ['list', 'retrieve']:
@@ -81,7 +90,7 @@ class APIChangePassword(APIView):
 class SubscriptionViewSet(viewsets.ReadOnlyModelViewSet):
     '''Метод для подписки'''
     permission_classes = (IsAuthenticated,)
-    pagination_class = PageNumberPagination
+    pagination_class = ApiPagination
     serializer_class = SubscriptionSerializer
 
     def ger_queryset(self):

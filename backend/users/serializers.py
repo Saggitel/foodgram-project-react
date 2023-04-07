@@ -9,14 +9,12 @@ from .models import Subscription, User
 
 class UserSerializer(serializers.ModelSerializer):
     '''Отображение списка пользователей'''
-    #id = serializers.ReadOnlyField
     is_subscribed = serializers.SerializerMethodField()
 
     class Meta:
         '''Метамодель'''
         model = User
         fields = ('email', 'id', 'username', 'first_name', 'last_name', 'is_subscribed')
-        #read_only_fields = '__all__'
 
     def get_is_subscribed(self, obj):
         '''Функция првоерки подписки на автора'''
@@ -59,7 +57,7 @@ class RecipesSerializer(serializers.ModelSerializer):
         '''Метамодель'''
         model = Recipe
         fields = ('id', 'name', 'image', 'coocking_time')
-        read_only_fields = '__all__'
+        read_only_fields = '__all__',
 
 class SubscriptionSerializer(serializers.ModelSerializer):
     '''Сериализатор модели Subscription'''

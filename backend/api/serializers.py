@@ -1,8 +1,8 @@
 """Сериализаторы моделей Recipes"""
 from django.shortcuts import get_object_or_404
+from drf_extra_fields.fields import Base64ImageField
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
-
 from recipes.models import (Favorite, Ingredient, IngredientRecipe, Recipe,
                             ShoppingList, Tag)
 from users.serializers import UserSerializer
@@ -14,7 +14,7 @@ class IngredientSerializer(serializers.ModelSerializer):
         '''Метамодель'''
         model = Ingredient
         fields = ('id', 'name', 'measurement_unit')
-        read_only_fields = '__all__'
+        read_only_fields = '__all__',
 
 
 class TagSerializer(serializers.ModelSerializer):
@@ -23,7 +23,7 @@ class TagSerializer(serializers.ModelSerializer):
         '''Метамодель'''
         model = Tag
         fields = ('id', 'name', 'color', 'slug')
-        read_only_fields = '__all__'
+        read_only_fields = '__all__',
 
 
 class IngredientRecipeSerializer(serializers.ModelSerializer):
@@ -38,7 +38,6 @@ class IngredientRecipeSerializer(serializers.ModelSerializer):
         '''Метамодель'''
         model = IngredientRecipe
         fields = ('id', 'name', 'amount', 'measurment_unit')
-        read_only_fields = '__all__'
 
 
 class ShoppingListSerializer(serializers.ModelSerializer):
@@ -55,12 +54,18 @@ class ShoppingListSerializer(serializers.ModelSerializer):
     id = serializers.PrimaryKeyRelatedField(
         source ='recipe',
         read_only=True)
-
+    is_in_shopping_list = serializers.SerializerMethodField()
     class Meta:
         '''Метамодель'''
         model = ShoppingList
         fields = ('id', 'name', 'image', 'cocking_time')
 
+    def get_is_in_shopping_list(self, obj):
+        '''Проверка наличия рецепта в списке покупок'''
+        user = self.context.get('request')
+        if not user.is_anonymous:
+            return ShoppingList.objects.filter(recipe=obj).exists()
+        return False
 
 class FavoriteSerializer(serializers.ModelSerializer):
     '''Сериализатор модели список избранного'''
@@ -76,12 +81,19 @@ class FavoriteSerializer(serializers.ModelSerializer):
     id = serializers.PrimaryKeyRelatedField(
         source ='recipe',
         read_only=True)
+    in_favorite = serializers.SerializerMethodField()
 
     class Meta:
         '''Метамодель'''
         model = Favorite
         fields = ('id', 'name', 'image', 'cocking_time')
 
+    def get_is_favorited(self, obj):
+        '''Проверка наличия рецепта в избранном'''
+        user = self.context.get('request')
+        if not user.is_anonymous:
+            return Favorite.objects.filter(recipe=obj).exists()
+        return False
 
 class RecipeListSerializer(serializers.ModelSerializer):
     '''Сериализатор Recipe: чтение данных'''
@@ -129,7 +141,6 @@ class AddIngredientSerializer(serializers.ModelSerializer):
         model = IngredientRecipe
         fields = ('id', 'amount')
 
-
 class RecipeWriteSerializer(serializers.ModelSerializer):
     '''Сериализатор Recipe: запись, обновление, удаление'''
     ingredients = AddIngredientSerializer(
@@ -141,12 +152,20 @@ class RecipeWriteSerializer(serializers.ModelSerializer):
     image = serializers.ImageField()
     author = serializers.HiddenField(
         default=serializers.CurrentUserDefault())
+    added = serializers.SerializerMethodField()
 
     class Meta:
         '''Метамодель'''
         model = Recipe
         fields = ('ingredients', 'tags', 'image',
                   'name', 'text', 'cooking_time', 'author')
+
+    def get_added(self,obj):
+        '''Проверка создан ли рецепт'''
+        request = self.context.get('request')
+        if not request.is_anonymous:
+            Favorite.objects.filter(author=request.user, recipe=obj.recipe).exists()
+        return False
 
     def validate_ingredients(self, value):
         '''Валидация данных ингредиентов'''
@@ -172,12 +191,9 @@ class RecipeWriteSerializer(serializers.ModelSerializer):
         if not tags:
             raise ValidationError(
                 {'tags': 'Нужно выбрать тег!'})
-        tags_list = []
-        for tag in tags:
-            if tag in tags_list:
-                raise ValidationError(
-                    {'tags': 'Теги повторяются!'})
-            tags_list.append(tag)
+        if len(set(tags)) != len(tags):
+            raise serializers.ValidationError(
+                'Теги повторяются')
         return value
 
     def to_representation(self, instance):
