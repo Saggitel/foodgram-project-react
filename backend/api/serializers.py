@@ -54,18 +54,10 @@ class ShoppingCartSerializer(serializers.ModelSerializer):
     id = serializers.PrimaryKeyRelatedField(
         source ='recipe',
         read_only=True)
-    is_in_shopping_cart = serializers.SerializerMethodField()
     class Meta:
         '''Метамодель'''
         model = ShoppingCart
-        fields = ('id', 'name', 'image', 'cocking_time', 'is_in_shopping_cart')
-
-    def get_is_in_shopping_cart(self, obj):
-        '''Проверка наличия рецепта в списке покупок'''
-        request = self.context.request
-        if not request.user.is_anonymous:
-            return ShoppingCart.objects.filter(recipe=obj).exists()
-        return False
+        fields = ('id', 'name', 'image', 'cocking_time')
 
 class FavouriteSerializer(serializers.ModelSerializer):
     '''Сериализатор модели список избранного'''

@@ -81,10 +81,6 @@ class RecipeViewSet(viewsets.ModelViewSet):
             serializer.is_valid(raise_exception=True)
             serializer.save(author=user, recipe=recipe)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
-        if not ShoppingCart.objects.filter(author=user,
-                                           recipe=recipe).exists():
-            return Response({'errors': 'Объект не найден'},
-                            status=status.HTTP_404_NOT_FOUND)
         ShoppingCart.objects.get(recipe=recipe).delete()
         return Response('Рецепт успешно удалён из списка покупок.',
                         status=status.HTTP_204_NO_CONTENT)
