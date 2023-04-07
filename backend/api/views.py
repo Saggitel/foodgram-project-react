@@ -53,7 +53,8 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
     @action(detail=True,
             methods=['post', 'delete'],
-            permission_classes=[IsAuthenticated])
+            permission_classes=[IsAuthenticated],
+            url_path='favorite')
     def favourite(self, request, *args, **kwargs):
         '''Функция получения, добавления и удаления рецепта из избранного'''
         recipe = get_object_or_404(Recipe, id=self.kwargs.get('pk'))
@@ -69,7 +70,8 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
     @action(detail=True,
             methods=['post', 'delete'],
-            permission_classes=[IsAuthenticated])
+            permission_classes=[IsAuthenticated],
+            url_path='shopping_cart')
     def shopping_cart(self, request, **kwargs):
         '''Функция получения, добавления и удаления рецепта из списка покупок'''
         recipe = get_object_or_404(Recipe, id=self.kwargs.get('pk'))
@@ -89,7 +91,8 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
     @action(detail=False,
             methods=['get'],
-            permission_classes=[IsAuthenticated])
+            permission_classes=[IsAuthenticated],
+            url_path='download_shopping_cart')
     def download_shopping_cart(self, request):
         '''Функция скачивания из покупок нексольких рецептов'''
         author = User.objects.get(id=self.request.user.pk)

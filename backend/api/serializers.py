@@ -62,7 +62,7 @@ class ShoppingCartSerializer(serializers.ModelSerializer):
 
     def get_is_in_shopping_cart(self, obj):
         '''Проверка наличия рецепта в списке покупок'''
-        request = self.context.get('request')
+        request = self.context.request
         if not request.user.is_anonymous:
             return ShoppingCart.objects.filter(recipe=obj).exists()
         return False

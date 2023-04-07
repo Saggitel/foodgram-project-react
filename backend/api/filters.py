@@ -19,7 +19,7 @@ class RecipeFilter(FilterSet):
         queryset=Tag.objects.all(),
     )
     is_in_shopping_cart = filters.NumberFilter(
-        method='filter_is_in_shopping_lsit')
+        method='filter_is_in_shopping_cart')
     is_favourited = filters.NumberFilter(
         method='filter_is_favourited')
 
