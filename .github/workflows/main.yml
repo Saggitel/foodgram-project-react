@@ -64,7 +64,7 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           passphrase: ${{ secrets.PASSPHRASE }}
           script: |
-            sudo cd ~/infra
+            cd ~/infra
             sudo docker-compose stop
             sudo docker-compose rm infra
             touch .env
