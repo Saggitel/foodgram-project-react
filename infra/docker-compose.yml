@@ -9,18 +9,14 @@ services:
       - ./.env
 
   frontend:
-    build:
-      context: ../frontend
-      dockerfile: ../frontend/Dockerfile
+    image: lazba/foodgram_frontend:latest
     volumes:
       - ../frontend/:/app/result_build/
     depends_on:
       - backend
   
   backend:
-    build: 
-      context: ../backend
-      dockerfile : ../backend/Dockerfile
+    image: lazba/foodgram_backend:latest
     restart: always
     volumes:
       - static_value:/app/backend_static/

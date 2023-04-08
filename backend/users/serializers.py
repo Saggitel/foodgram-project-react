@@ -38,12 +38,6 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         user.save()
         return user
 
-    class Meta:
-        '''Метамодель'''
-        model = Recipe
-        fields = ('id', 'name', 'image', 'coocking_time')
-        read_only_fields = '__all__',
-
 class SubscriptionSerializer(serializers.ModelSerializer):
     '''Сериализатор модели Subscription'''
     email = serializers.ReadOnlyField(source='author.email')
