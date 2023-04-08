@@ -29,7 +29,7 @@ class RecipeFilter(FilterSet):
         if value == 1 and self.request.user.is_authenticated:
             favorites = list(
                 Favourite.objects.filter(
-                    author=self.request.user).values_list('recipe_id', 
+                    author=self.request.user).values_list('recipe_id',
                                                           flat=True)
             )
             fav_queryset = queryset.filter(id__in=favorites)
@@ -41,7 +41,7 @@ class RecipeFilter(FilterSet):
         if value == 1 and self.request.user.is_authenticated:
             shopping_cart = list(
                 ShoppingCart.objects.filter(
-                    author=self.request.user).values_list('recipe_id', 
+                    author=self.request.user).values_list('recipe_id',
                                                           flat=True)
             )
             sc_queryset = queryset.filter(id__in=shopping_cart)

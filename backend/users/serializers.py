@@ -14,7 +14,7 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         '''Метамодель'''
         model = User
-        fields = ('email', 'id', 'username', 
+        fields = ('email', 'id', 'username',
                   'first_name', 'last_name', 'is_subscribed')
 
     def get_is_subscribed(self, obj):
@@ -22,7 +22,7 @@ class UserSerializer(serializers.ModelSerializer):
         request = self.context.get('request')
         if request is None or request.user.is_anonymous:
             return False
-        return Subscription.objects.filter(user=request.user, 
+        return Subscription.objects.filter(user=request.user,
                                            author=obj).exists()
 
 
@@ -31,7 +31,7 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
     class Meta:
         '''Метамодель'''
         model = User
-        fields = ('email', 'id', 'username', 'first_name', 
+        fields = ('email', 'id', 'username', 'first_name',
                   'last_name', 'password')
         extra_kwargs = {'password': {'write_only': True}}
 
@@ -57,7 +57,7 @@ class SubscriptionSerializer(serializers.ModelSerializer):
     class Meta:
         '''Метамодель'''
         model = Subscription
-        fields = ('email', 'id', 'username', 'first_name', 
+        fields = ('email', 'id', 'username', 'first_name',
                   'last_name', 'is_subscribed',
                   'recipes', 'recipes_count')
 
@@ -66,7 +66,7 @@ class SubscriptionSerializer(serializers.ModelSerializer):
         request = self.context.get('request')
         if request is None or request.user.is_anonymous:
             return False
-        return Subscription.objects.filter(user=obj.user, 
+        return Subscription.objects.filter(user=obj.user,
                                            author=obj.author).exists()
 
     def get_recipes(self, obj):

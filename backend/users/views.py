@@ -40,7 +40,7 @@ class UserViewSet(DjoserUserViewSet):
             permission_classes=(IsAuthenticated,),
             url_path='subscribe',)
     def subscribe(self, request, id=None):
-        '''Метод для создания Подписки на автора, 
+        '''Метод для создания Подписки на автора,
            удаления Подписки на атвора'''
         if request.method == 'POST':
             serializer = SubscriptionSerializer(
