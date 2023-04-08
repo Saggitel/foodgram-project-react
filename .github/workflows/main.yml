@@ -80,3 +80,9 @@ jobs:
             USE_L10N=${{ secrets.USE_L10N }} >> .env
             USE_TZ=${{ secrets.USE_TZ }} >> .env
             sudo docker-compose up -d 
+            sudo docker exec -ti infra-backend-1 bash
+            python manage.py makemigrations
+            python manage.py migrate
+            python manage.py collectstatic --no-input
+            exit
+            
