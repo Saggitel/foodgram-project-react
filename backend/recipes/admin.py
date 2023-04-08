@@ -10,6 +10,7 @@ class IngredientsInline(admin.TabularInline):
     model = IngredientRecipe
     extra = 3
 
+
 class FavouriteAdmin(admin.ModelAdmin):
     '''Избрынне рецепты'''
     list_display = ('author', 'recipe')

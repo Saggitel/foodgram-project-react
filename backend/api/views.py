@@ -9,8 +9,9 @@ from rest_framework import mixins, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import SAFE_METHODS, AllowAny, IsAuthenticated
 from rest_framework.response import Response
-from users.models import User
+from django.db.models import Sum
 
+from users.models import User
 from .filters import IngredientSearchFilter, RecipeFilter
 from .permissions import IsOwnerOrAdminOrReadOnly
 from .serializers import (FavouriteSerializer, IngredientSerializer,
@@ -45,7 +46,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
     filterset_class = RecipeFilter
 
     def get_serializer_class(self):
-        '''Функция выболра сериализатора 
+        '''Функция выбора сериализатора 
            в зависимости от метода запроса'''
         if self.request.method in SAFE_METHODS:
             return RecipeListSerializer
@@ -55,7 +56,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
             methods=['post', 'delete'],
             permission_classes=[IsAuthenticated],
             url_path='favorite')
-    def favourite(self, request, *args, **kwargs):
+    def favorite(self, request, *args, **kwargs):
         '''Функция получения, добавления и удаления рецепта из избранного'''
         recipe = get_object_or_404(Recipe, id=self.kwargs.get('pk'))
         user = self.request.user
@@ -92,10 +93,9 @@ class RecipeViewSet(viewsets.ModelViewSet):
     def download_shopping_cart(self, request):
         '''Функция скачивания из покупок нексольких рецептов'''
         ingredients = IngredientRecipe.objects.filter(
-            recipe__is_in_shopping_cart__user=self.request.recipe).values(
+            recipe__shopping_cart__author=self.request.user).values(
             'ingredient__name',
             'ingredient__measurement_unit').annotate(total=Sum('amount'))
-
         shopping_cart = '\n'.join([
             f'{ingredient["ingredient__name"]} - {ingredient["total"]}'
             f'{ingredient["ingredient__measurement_unit"]}'

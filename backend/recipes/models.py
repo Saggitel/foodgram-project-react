@@ -7,9 +7,9 @@ from users.models import User
 class Tag(models.Model):
     '''Теги для рецептов'''
     name = models.CharField(
-        verbose_name ='Название тега',
-        max_length = 150, unique = True,
-        help_text = 'Ввведите тег')
+        verbose_name='Название тега',
+        max_length=150, unique=True,
+        help_text='Ввведите тег')
     ORANGE = 'fa6a02'
     GREEN = '09db4f'
     PURPLE = 'b813d1'
@@ -25,9 +25,9 @@ class Tag(models.Model):
         choices=COLOR_TAG,
         help_text='Выберите цвет')
     slug = models.SlugField(
-        verbose_name ='Название слага',
-        max_length = 200, unique = True,
-        help_text = 'Укажите слаг')
+        verbose_name='Название слага',
+        max_length=200, unique=True,
+        help_text='Укажите слаг')
 
     class Meta:
         '''Метамодель'''
@@ -37,17 +37,18 @@ class Tag(models.Model):
     def __str__(self):
         return f'{self.name}'
 
+
 class Ingredient(models.Model):
     '''Ингридиент для рецепта'''
     name = models.CharField(
-        verbose_name ='Название ингредиента',
-        max_length = 150,
-        db_index = True,
-        help_text = 'Введите название ингредиента')
+        verbose_name='Название ингредиента',
+        max_length=150,
+        db_index=True,
+        help_text='Введите название ингредиента')
     measurement_unit = models.CharField(
-        verbose_name ='Единица измерения',
-        max_length = 150,
-        help_text = 'Укажите единицы измерения')
+        verbose_name='Единица измерения',
+        max_length=150,
+        help_text='Укажите единицы измерения')
 
     class Meta:
         '''Метамодель'''
@@ -57,6 +58,7 @@ class Ingredient(models.Model):
 
     def __str__(self):
         return f'{self.name}'
+
 
 class Recipe(models.Model):
     '''Рецепт'''
@@ -107,6 +109,7 @@ class Recipe(models.Model):
     def __str__(self):
         return f'{self.name}'
 
+
 class IngredientRecipe(models.Model):
     '''Модель связывающая игредиенты и рецепт'''
     recipe = models.ForeignKey(
@@ -137,6 +140,7 @@ class IngredientRecipe(models.Model):
 
     def __str__(self):
         return f'{self.ingredient.name} {self.amount}'
+
 
 class ShoppingCart(models.Model):
     """Модель для списка покупок"""

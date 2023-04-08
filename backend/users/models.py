@@ -15,12 +15,13 @@ class User(AbstractUser):
         (GUEST, 'Гость'),
     ]
 
-
     '''Модель пользователя'''
-    username = models.CharField(max_length=150, unique=True, verbose_name='Имя пользователя')
+    username = models.CharField(max_length=150, unique=True, 
+                                verbose_name='Имя пользователя')
     first_name = models.CharField(max_length=150, verbose_name='Имя')
     last_name = models.CharField(max_length=150, verbose_name='Фамилия')
-    email = models.EmailField(max_length=150, unique=True, verbose_name='Адресс электроной почты')
+    email = models.EmailField(max_length=150, unique=True, 
+                              verbose_name='Адресс электроной почты')
     password = models.CharField(max_length=150, verbose_name='Пароль')
     role = models.CharField(max_length=15, choices=ROLE_USER,
                             default=USER, verbose_name='Пользовательская роль')
@@ -31,7 +32,7 @@ class User(AbstractUser):
         '''Метамодель'''
         constraints = [
                 models.UniqueConstraint(fields=['email', 'username'],
-                                    name='unique_user')
+                                        name='unique_user')
             ]
         ordering = ['username']
         verbose_name = 'Пользователь'

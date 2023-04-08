@@ -74,19 +74,11 @@ class FavouriteSerializer(serializers.ModelSerializer):
     id = serializers.PrimaryKeyRelatedField(
         source ='recipe',
         read_only=True)
-    in_favourite = serializers.SerializerMethodField()
-
+ 
     class Meta:
         '''Метамодель'''
         model = Favourite
-        fields = ('id', 'name', 'image', 'cocking_time', 'in_favourite')
-
-    def get_is_favourited(self, obj):
-        '''Проверка наличия рецепта в избранном'''
-        request = self.context.get('request')
-        if not request.user.is_anonymous:
-            return Favourite.objects.filter(recipe=obj).exists()
-        return False
+        fields = ('id', 'name', 'image', 'cocking_time')
 
 class RecipeListSerializer(serializers.ModelSerializer):
     '''Сериализатор Recipe: чтение данных'''
@@ -98,22 +90,22 @@ class RecipeListSerializer(serializers.ModelSerializer):
         many=True,
         source='recipe_ingredients',
         read_only=True)
-    is_favourited = serializers.SerializerMethodField()
+    is_favorited = serializers.SerializerMethodField()
     is_in_shopping_cart = serializers.SerializerMethodField()
 
     class Meta:
         '''Метамодель'''
         model = Recipe
         fields = ('id', 'tags', 'author', 'ingredients',
-                  'is_favourited', 'is_in_shopping_cart',
+                  'is_favorited', 'is_in_shopping_cart',
                   'name', 'image', 'text', 'cooking_time')
 
-    def get_is_favourited(self, obj):
+    def get_is_favorited(self, obj):
         '''Проверка наличия рецепта в избранном'''
         request = self.context.get('request')
-        if not request.user.is_anonymous:
-            return Favourite.objects.filter(recipe=obj).exists()
-        return False
+        if request is None or request.user.is_anonymous:
+            return False
+        return Favourite.objects.filter(recipe=obj).exists()
 
     def get_is_in_shopping_cart(self, obj):
         '''Проверка наличия рецепта в списке покупок'''

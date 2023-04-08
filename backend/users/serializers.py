@@ -3,9 +3,9 @@ from api.fields import Base64ImageField
 from recipes.models import Recipe
 from rest_framework import serializers, status
 from rest_framework.exceptions import ValidationError
+import api.serializers
 
 from .models import Subscription, User
-
 
 class UserSerializer(serializers.ModelSerializer):
     '''Отображение списка пользователей'''
@@ -38,21 +38,6 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         user.save()
         return user
 
-class RecipesSerializer(serializers.ModelSerializer):
-    '''Сериализатор рецептов для Мои подписки'''
-    name = serializers.ReadOnlyField(
-        source ='recipe.name',
-        read_only=True)
-    image = Base64ImageField(
-        source ='recipe.image',
-        read_only=True)
-    cocking_time = serializers.IntegerField(
-        source ='recipe.cocking_time',
-        read_only=True)
-    id = serializers.PrimaryKeyRelatedField(
-        source ='recipe',
-        read_only=True)
-
     class Meta:
         '''Метамодель'''
         model = Recipe
@@ -82,11 +67,12 @@ class SubscriptionSerializer(serializers.ModelSerializer):
         if request is None or request.user.is_anonymous:
             return False
         return Subscription.objects.filter(user=obj.user, author=obj.author).exists()
-
-    def get_recipe(self, obj):
-        '''Функция вывода рецепта'''
-        return Recipe.objects.filter(author=obj.author)
-
+    
+    def get_recipes(self, obj):
+        '''Функция вывода рецепта в подписки'''
+        recipes = Recipe.objects.filter(author=obj.author)
+        return api.serializers.RecipeMiniSerializer(recipes, many=True).data
+    
     def get_recipes_count(self, obj):
         '''Функция подсчета количесвта рецептов'''
         return Recipe.objects.filter(author=obj.author).count()
