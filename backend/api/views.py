@@ -1,11 +1,12 @@
 '''Вьюсеты прложения Recipes'''
 from api.paginations import ApiPagination
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
-from recipes.models import Favourite, Ingredient, Recipe, ShoppingCart, Tag
+from recipes.models import (Favourite, Ingredient, IngredientRecipe, Recipe,
+                            ShoppingCart, Tag)
 from rest_framework import mixins, status, viewsets
 from rest_framework.decorators import action
-from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import SAFE_METHODS, AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from users.models import User
@@ -15,7 +16,6 @@ from .permissions import IsOwnerOrAdminOrReadOnly
 from .serializers import (FavouriteSerializer, IngredientSerializer,
                           RecipeListSerializer, RecipeWriteSerializer,
                           ShoppingCartSerializer, TagSerializer)
-from .services import shopping_cart
 
 
 class TagViewSet(mixins.ListModelMixin,
@@ -85,14 +85,23 @@ class RecipeViewSet(viewsets.ModelViewSet):
         return Response('Рецепт успешно удалён из списка покупок.',
                         status=status.HTTP_204_NO_CONTENT)
 
-    @action(detail=False,
-            methods=['get'],
-            permission_classes=[IsAuthenticated],
+    @action(methods=['GET'],
+            detail=False,
+            permission_classes=(IsAuthenticated,),
             url_path='download_shopping_cart')
     def download_shopping_cart(self, request):
         '''Функция скачивания из покупок нексольких рецептов'''
-        author = User.objects.get(id=self.request.user.pk)
-        if author.shopping_cart.exists():
-            return shopping_cart(self, request, author)
-        return Response('Список покупок пуст.',
-                        status=status.HTTP_404_NOT_FOUND)
+        ingredients = IngredientRecipe.objects.filter(
+            recipe__is_in_shopping_cart__user=self.request.recipe).values(
+            'ingredient__name',
+            'ingredient__measurement_unit').annotate(total=Sum('amount'))
+
+        shopping_cart = '\n'.join([
+            f'{ingredient["ingredient__name"]} - {ingredient["total"]}'
+            f'{ingredient["ingredient__measurement_unit"]}'
+            for ingredient in ingredients
+        ])
+        filename = 'shopping_cart.txt'
+        response = HttpResponse(shopping_cart, content_type='text/plain')
+        response['Content-Disposition'] = f'attachment; filename={filename}'
+        return response

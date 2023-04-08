@@ -5,7 +5,6 @@ from django.shortcuts import get_object_or_404
 from djoser.views import UserViewSet as DjoserUserViewSet
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
-from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -90,11 +89,12 @@ class APIChangePassword(APIView):
 
 class SubscriptionViewSet(viewsets.ReadOnlyModelViewSet):
     '''Метод для подписки'''
+    queryset = SubscriptionSerializer()
     permission_classes = (IsAuthenticated,)
     pagination_class = ApiPagination
     serializer_class = SubscriptionSerializer
 
-    def ger_queryset(self):
+    def get_queryset(self):
         '''Переопределен метод queryset'''
         user = self.request.user
         queryset = Subscription.objects.filter(user=user)

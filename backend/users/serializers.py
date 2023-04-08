@@ -1,10 +1,11 @@
 '''Сериализаторы моделей User'''
+from api.fields import Base64ImageField
 from recipes.models import Recipe
 from rest_framework import serializers, status
 from rest_framework.exceptions import ValidationError
 
 from .models import Subscription, User
-from api.fields import Base64ImageField
+
 
 class UserSerializer(serializers.ModelSerializer):
     '''Отображение списка пользователей'''
@@ -93,16 +94,12 @@ class SubscriptionSerializer(serializers.ModelSerializer):
     def validate(self, data):
         '''Функция валидации'''
         author = self.context.get('author')
-        user = self.context.get('request').user
+        user = self.context.get('request')
         if Subscription.objects.filter(
                 author=author,
                 user=user).exists():
             raise ValidationError(
                 detail='Вы уже подписаны на этого пользователя!',
-                code=status.HTTP_400_BAD_REQUEST)
-        if user.id == author.id:
-            raise ValidationError(
-                detail='Невозможно подписаться на себя!',
                 code=status.HTTP_400_BAD_REQUEST)
         return super().validate(data)
 
