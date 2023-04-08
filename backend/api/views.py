@@ -11,7 +11,6 @@ from rest_framework.permissions import SAFE_METHODS, AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from django.db.models import Sum
 
-from users.models import User
 from .filters import IngredientSearchFilter, RecipeFilter
 from .permissions import IsOwnerOrAdminOrReadOnly
 from .serializers import (FavouriteSerializer, IngredientSerializer,
@@ -20,12 +19,13 @@ from .serializers import (FavouriteSerializer, IngredientSerializer,
 
 
 class TagViewSet(mixins.ListModelMixin,
-                mixins.RetrieveModelMixin,
-                viewsets.GenericViewSet):
+                 mixins.RetrieveModelMixin,
+                 viewsets.GenericViewSet):
     '''Вьюсет модели Tag'''
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
     permissions_class = (AllowAny,)
+
 
 class IngredientViewSet(mixins.ListModelMixin,
                         mixins.RetrieveModelMixin,
@@ -37,6 +37,7 @@ class IngredientViewSet(mixins.ListModelMixin,
     filter_backends = (IngredientSearchFilter,)
     search_fields = ('^name',)
 
+
 class RecipeViewSet(viewsets.ModelViewSet):
     '''Вьюсет рецепты'''
     queryset = Recipe.objects.all()
@@ -46,7 +47,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
     filterset_class = RecipeFilter
 
     def get_serializer_class(self):
-        '''Функция выбора сериализатора 
+        '''Функция выбора сериализатора
            в зависимости от метода запроса'''
         if self.request.method in SAFE_METHODS:
             return RecipeListSerializer
@@ -74,7 +75,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
             permission_classes=[IsAuthenticated],
             url_path='shopping_cart')
     def shopping_cart(self, request, **kwargs):
-        '''Функция получения, добавления и удаления рецепта из списка покупок'''
+        '''Функция получения, добавления и удаления рецепта из покупок'''
         recipe = get_object_or_404(Recipe, id=self.kwargs.get('pk'))
         user = self.request.user
         if request.method == 'POST':

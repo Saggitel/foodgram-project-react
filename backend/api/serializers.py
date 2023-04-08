@@ -30,11 +30,12 @@ class TagSerializer(serializers.ModelSerializer):
 class IngredientRecipeSerializer(serializers.ModelSerializer):
     ''''Сериализатор модели IngredientRecipe'''
     id = serializers.ReadOnlyField(
-        source = 'ingredient.id')
+        source='ingredient.id')
     name = serializers.ReadOnlyField(
-        source = 'ingredient.name')
+        source='ingredient.name')
     measurment_unit = serializers.ReadOnlyField(
-        source = 'source.measurement_unit')
+        source='source.measurement_unit')
+
     class Meta:
         '''Метамодель'''
         model = IngredientRecipe
@@ -44,41 +45,44 @@ class IngredientRecipeSerializer(serializers.ModelSerializer):
 class ShoppingCartSerializer(serializers.ModelSerializer):
     '''Сериализатор модели список покупок'''
     name = serializers.ReadOnlyField(
-        source ='recipe.name',
+        source='recipe.name',
         read_only=True)
     image = Base64ImageField(
-        source ='recipe.image',
+        source='recipe.image',
         read_only=True)
     cocking_time = serializers.IntegerField(
-        source ='recipe.cocking_time',
+        source='recipe.cocking_time',
         read_only=True)
     id = serializers.PrimaryKeyRelatedField(
-        source ='recipe',
+        source='recipe',
         read_only=True)
+
     class Meta:
         '''Метамодель'''
         model = ShoppingCart
         fields = ('id', 'name', 'image', 'cocking_time')
 
+
 class FavouriteSerializer(serializers.ModelSerializer):
     '''Сериализатор модели список избранного'''
     name = serializers.ReadOnlyField(
-        source ='recipe.name',
+        source='recipe.name',
         read_only=True)
     image = Base64ImageField(
-        source ='recipe.image',
+        source='recipe.image',
         read_only=True)
     cocking_time = serializers.IntegerField(
-        source ='recipe.cocking_time',
+        source='recipe.cocking_time',
         read_only=True)
     id = serializers.PrimaryKeyRelatedField(
-        source ='recipe',
+        source='recipe',
         read_only=True)
- 
+
     class Meta:
         '''Метамодель'''
         model = Favourite
         fields = ('id', 'name', 'image', 'cocking_time')
+
 
 class RecipeListSerializer(serializers.ModelSerializer):
     '''Сериализатор Recipe: чтение данных'''
@@ -126,6 +130,7 @@ class AddIngredientSerializer(serializers.ModelSerializer):
         model = IngredientRecipe
         fields = ('id', 'amount')
 
+
 class RecipeWriteSerializer(serializers.ModelSerializer):
     '''Сериализатор Recipe: запись, обновление, удаление'''
     ingredients = AddIngredientSerializer(
@@ -145,7 +150,7 @@ class RecipeWriteSerializer(serializers.ModelSerializer):
         fields = ('ingredients', 'tags', 'image',
                   'name', 'text', 'cooking_time', 'author', 'added')
 
-    def get_added(self,obj):
+    def get_added(self, obj):
         '''Проверка создан ли рецепт'''
         request = self.context.get('request')
         if not request.user.is_anonymous:

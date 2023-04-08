@@ -1,13 +1,14 @@
 '''Фильтры для вьюсетов'''
 import django_filters
-from django_filters.rest_framework import FilterSet, filters
-from recipes.models import Recipe, Tag, ShoppingCart, Favourite
+from django_filters.rest_framework import FilterSet
+from recipes.models import Recipe, ShoppingCart, Favourite
 from rest_framework.filters import SearchFilter
-from users.models import User
+
 
 class IngredientSearchFilter(SearchFilter):
     ''''Филтр списка ингредиентов по имени'''
     search_param = 'name'
+
 
 class RecipeFilter(FilterSet):
     ''''Фильтр списка рецептов'''
@@ -28,7 +29,8 @@ class RecipeFilter(FilterSet):
         if value == 1 and self.request.user.is_authenticated:
             favorites = list(
                 Favourite.objects.filter(
-                    author=self.request.user).values_list('recipe_id', flat=True)
+                    author=self.request.user).values_list('recipe_id', 
+                                                          flat=True)
             )
             fav_queryset = queryset.filter(id__in=favorites)
             return fav_queryset
@@ -39,7 +41,8 @@ class RecipeFilter(FilterSet):
         if value == 1 and self.request.user.is_authenticated:
             shopping_cart = list(
                 ShoppingCart.objects.filter(
-                    author=self.request.user).values_list('recipe_id', flat=True)
+                    author=self.request.user).values_list('recipe_id', 
+                                                          flat=True)
             )
             sc_queryset = queryset.filter(id__in=shopping_cart)
             return sc_queryset

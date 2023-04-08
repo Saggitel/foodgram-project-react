@@ -16,11 +16,11 @@ class User(AbstractUser):
     ]
 
     '''Модель пользователя'''
-    username = models.CharField(max_length=150, unique=True, 
+    username = models.CharField(max_length=150, unique=True,
                                 verbose_name='Имя пользователя')
     first_name = models.CharField(max_length=150, verbose_name='Имя')
     last_name = models.CharField(max_length=150, verbose_name='Фамилия')
-    email = models.EmailField(max_length=150, unique=True, 
+    email = models.EmailField(max_length=150, unique=True,
                               verbose_name='Адресс электроной почты')
     password = models.CharField(max_length=150, verbose_name='Пароль')
     role = models.CharField(max_length=15, choices=ROLE_USER,

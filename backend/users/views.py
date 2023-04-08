@@ -40,7 +40,8 @@ class UserViewSet(DjoserUserViewSet):
             permission_classes=(IsAuthenticated,),
             url_path='subscribe',)
     def subscribe(self, request, id=None):
-        '''Метод для создания Подписки на автора, удаления Подписки на атвора'''
+        '''Метод для создания Подписки на автора, 
+           удаления Подписки на атвора'''
         if request.method == 'POST':
             serializer = SubscriptionSerializer(
                 data=request.data, context={
@@ -67,6 +68,7 @@ class UserViewSet(DjoserUserViewSet):
                     {'Вы не были подписаны на этого пользователя'},
                     status=status.HTTP_400_BAD_REQUEST)
 
+
 class APIChangePassword(APIView):
     '''Метод для смены пароля пользователя'''
     permission_classes = (IsAuthenticated,)
@@ -86,6 +88,7 @@ class APIChangePassword(APIView):
             return Response(status=status.HTTP_204_NO_CONTENT)
         return Response(serializer.errors,
                         status=status.HTTP_400_BAD_REQUEST)
+
 
 class SubscriptionViewSet(viewsets.ReadOnlyModelViewSet):
     '''Метод для подписки'''

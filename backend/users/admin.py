@@ -12,6 +12,7 @@ class UserAdmin(admin.ModelAdmin):
     list_filter = ('username', 'email',)
     empty_value_display = '-пусто-'
 
+
 class SubscriptionAdmin(admin.ModelAdmin):
     '''Подписки'''
     list_display = ('user', 'author')
