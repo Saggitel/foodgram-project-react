@@ -170,7 +170,7 @@ class ShoppingCart(models.Model):
 
 class Favourite(models.Model):
     """Избранные рецепты"""
-    user = models.ForeignKey(
+    author = models.ForeignKey(
         User,
         related_name='favourite',
         on_delete=models.CASCADE,

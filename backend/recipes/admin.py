@@ -13,9 +13,9 @@ class IngredientsInline(admin.TabularInline):
 
 class FavouriteAdmin(admin.ModelAdmin):
     '''Избрынне рецепты'''
-    list_display = ('user', 'recipe')
-    list_filter = ('user',)
-    search_fields = ('user',)
+    list_display = ('author', 'recipe')
+    list_filter = ('author',)
+    search_fields = ('author',)
 
 
 class ShoppingCartAdmin(admin.ModelAdmin):
