@@ -19,9 +19,6 @@ services:
     image: lazba/foodgram_backend:latest
     restart: always
     volumes:
-    command: >
-      bash -c 'python manahe.py makemigrations && python manage.py migrate &&
-      python manage.py collectstatic --noinput'
       - static_value:/app/backend_static/
       - media_value:/app/backend_media/
     depends_on:
