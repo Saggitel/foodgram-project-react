@@ -34,7 +34,7 @@ class IngredientRecipeAdmin(admin.ModelAdmin):
 
 class RecipeAdmin(admin.ModelAdmin):
     '''Рецепты, количесвто рецептов в избранном'''
-    list_display = ('id', 'author', 'name', 'pub_date', 'in_favourite', 'ingredients')
+    list_display = ('id', 'author', 'name', 'pub_date', 'in_favourite',)
     search_fields = ('author', 'name', 'tags')
     list_filter = ('pub_date', 'author', 'name', 'tags')
     filter_horizontal = ('ingredients',)
