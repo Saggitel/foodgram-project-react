@@ -131,8 +131,8 @@ class IngredientRecipe(models.Model):
 
     class Meta:
         '''Метамодель'''
-        verbose_name = 'Cостав рецепта'
-        verbose_name_plural = 'Состав рецепта'
+        verbose_name = 'Ингредиенты в рецептах'
+        verbose_name_plural = 'Ингредиенты в рецептах'
         constraints = [
             models.UniqueConstraint(
                 fields=['recipe', 'ingredient'],
@@ -170,11 +170,11 @@ class ShoppingCart(models.Model):
 
 class Favourite(models.Model):
     """Избранные рецепты"""
-    author = models.ForeignKey(
+    user = models.ForeignKey(
         User,
         related_name='favourite',
         on_delete=models.CASCADE,
-        verbose_name='Автор рецепта')
+        verbose_name='Владелец избранного')
     recipe = models.ForeignKey(
         Recipe,
         related_name='favourite',

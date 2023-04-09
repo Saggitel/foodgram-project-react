@@ -1,4 +1,4 @@
-![Workflow status.](https://github.com/Saggitel/foodgram-project-react/actions/workflows/yamdb_workflow.yml/badge.svg)
+![Workflow status.](https://github.com/Saggitel/foodgram-project-react/actions/workflows/main.yml/badge.svg)
 # Проект Foodgram, «Продуктовый помощник»
 ### На этом сервисе пользователи смогут публиковать рецепты, подписываться на публикации других пользователей, добавлять понравившиеся рецепты в список «Избранное», а перед походом в магазин скачивать сводный список продуктов, необходимых для приготовления одного или нескольких выбранных блюд.
 

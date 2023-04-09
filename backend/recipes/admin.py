@@ -13,9 +13,9 @@ class IngredientsInline(admin.TabularInline):
 
 class FavouriteAdmin(admin.ModelAdmin):
     '''Избрынне рецепты'''
-    list_display = ('author', 'recipe')
-    list_filter = ('author',)
-    search_fields = ('author',)
+    list_display = ('user', 'recipe')
+    list_filter = ('user',)
+    search_fields = ('user',)
 
 
 class ShoppingCartAdmin(admin.ModelAdmin):
@@ -34,8 +34,8 @@ class IngredientRecipeAdmin(admin.ModelAdmin):
 
 class RecipeAdmin(admin.ModelAdmin):
     '''Рецепты, количесвто рецептов в избранном'''
-    list_display = ('id', 'author', 'name', 'pub_date', 'in_favourite', )
-    search_fields = ('name',)
+    list_display = ('id', 'author', 'name', 'pub_date', 'in_favourite', 'ingredients')
+    search_fields = ('author', 'name', 'tags')
     list_filter = ('pub_date', 'author', 'name', 'tags')
     filter_horizontal = ('ingredients',)
     empty_value_display = '-пусто-'
